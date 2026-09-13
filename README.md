@@ -24,14 +24,11 @@
 
 ## ما تم تعديله
 
-- تثبيت `basePath: ""` صراحةً حتى تُبنى أصول CSS/JavaScript من جذر النطاق المخصص.
+- إزالة `BASE_PATH` نهائيًا من البناء.
 - إبقاء الموقع على جذر النطاق المخصص.
 - استخدام Workflow GitHub Pages الرسمي لبناء Next.js ورفع مجلد `out`.
 - استخدام `actions/upload-pages-artifact@v4` و`actions/deploy-pages@v4`.
 - التحقق أثناء النشر من وجود `out/index.html` و`out/_next` والصورة الرئيسية.
-- فشل النشر تلقائيًا إذا ظهر المسار القديم `/qudurat/_next/` في الناتج.
-- إنشاء `out/.nojekyll` بعد البناء كإجراء حماية إضافي لمجلد `_next`.
-- التحقق من أن ملف CSS المشار إليه في `out/index.html` موجود فعليًا داخل `out/_next/static/css/`.
 - الإبقاء على `public/.nojekyll`.
 
 > ملاحظة: عند النشر عبر GitHub Actions، إعداد **Custom domain** في Settings هو المرجع الأساسي، ولا يلزم ملف `CNAME` داخل المشروع.
