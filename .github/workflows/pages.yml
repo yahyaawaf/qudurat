@@ -38,14 +38,40 @@ jobs:
       - name: Build static site
         run: npm run build
 
-      - name: Verify static export for custom domain
+      # ضمان عدم معالجة مجلد _next على أنه محتوى Jekyll، حتى لو تغيّر
+      # سلوك نسخ الملفات المخفية من public في إصدار مستقبلي من Next.js.
+      - name: Ensure no Jekyll processing
+        run: touch out/.nojekyll
+
+      - name: Verify static export for custom domain root
         shell: bash
         run: |
+          set -euo pipefail
+
           test -f out/index.html
-          test -d out/_next
-          grep -q '/_next/' out/index.html
+          test -d out/_next/static
+          test -f out/.nojekyll
           test -f out/qodrati-teacher.png
-          echo "Static export is ready for the custom domain root."
+
+          # يجب أن تكون أصول Next من جذر النطاق: /_next/...
+          grep -q '/_next/' out/index.html
+
+          # أي ظهور لمسار المستودع القديم سيكسر CSS/JS على النطاق المخصص.
+          if grep -RIn --include='*.html' --include='*.js' --include='*.css' '/qudurat/_next/' out; then
+            echo 'ERROR: Found the old /qudurat/_next/ asset path.' >&2
+            exit 1
+          fi
+
+          # تحقّق فعليًا من أن أول ملف CSS المشار إليه في الصفحة موجود داخل out.
+          CSS_URL="$(grep -oE 'href="/_next/static/css/[^"]+\.css"' out/index.html | head -n 1 | cut -d'"' -f2 || true)"
+          if [ -z "$CSS_URL" ]; then
+            echo 'ERROR: No root-based Next.js CSS URL found in out/index.html.' >&2
+            exit 1
+          fi
+          test -f "out${CSS_URL}"
+
+          echo "Verified CSS asset: ${CSS_URL}"
+          echo "Static export is ready for https://qudurat.somaya-mgalad.sa/"
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4

@@ -1,7 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // النطاق المخصص يعمل من جذر الموقع مباشرة، لذلك لا نستخدم basePath باسم المستودع.
+  // GitHub Pages يعمل هنا عبر النطاق المخصص من جذر الموقع:
+  // https://qudurat.somaya-mgalad.sa/
+  // لذلك يجب ألا نضيف اسم المستودع إلى مسارات CSS/JS والصور.
   output: "export",
+  basePath: "",
   trailingSlash: true,
   images: {
     unoptimized: true,
